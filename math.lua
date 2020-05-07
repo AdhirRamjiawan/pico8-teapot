@@ -8,7 +8,7 @@ function gfx_maths:new(o)
 end
 
 function gfx_maths:radian(angle)
-    return angle * (3.14159265359 / 180)
+    return angle * 0.01745
 end
 
 function gfx_maths:project3d_vert(x,z,sx,sz,ox,oz)

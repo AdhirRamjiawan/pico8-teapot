@@ -24,19 +24,21 @@ function off:new(o)
     self.face_count = 0
     self.edge_count = 0
 
+    self.scale = 1
+
     return o
 end
 
 function off:init(data)
     self.data = data
-    self.vertice_count = self.data.data1[2]
-    self.face_count = self.data.data1[3]
-    self.edge_count =  self.data.data1[4]
+    self.vertice_count = self.data.data1[1]
+    self.face_count = self.data.data1[2]
+    self.edge_count =  self.data.data1[3]
 
 
     local vertice_end_index = self.vertice_count + 2
 
-    for r = 5, #data.data1, 3 do
+    for r = 4, #data.data1, 3 do
         add(self.vertices1, self.data.data1[r])
         add(self.vertices1, self.data.data1[r + 1])
         add(self.vertices1, self.data.data1[r + 2])
@@ -106,6 +108,37 @@ end
 function off:update()
 end
 
+function off:draw_part(data)
+    for r = 1, #data, 3 do
+    
+        local radian = maths:radian(time() * 15)
+        local rot = {
+            x = data[r],
+            y = data[r + 1],
+            z = data[r + 2],
+        }
+
+
+        rot = maths:rotate_yaxis(maths:radian(-29), data[r], data[r+1], data[r+2])
+        rot = maths:rotate_yaxis(radian, rot.x, rot.y, rot.z)
+        rot = maths:rotate_xaxis(radian, rot.x, rot.y, rot.z)
+        rot = maths:rotate_zaxis(radian, rot.x, rot.y, rot.z)
+        local xy = maths:project3d_vert(rot.x, rot.z, 50 * self.scale, 50 * self.scale, 84, 84)
+    
+        pset(xy.x, xy.y, 7)
+    end
+end
+
+function off:update()
+    if btnp(4) then 
+        self.scale = self.scale - 0.25
+    end
+
+    if btnp(5) then 
+        self.scale = self.scale + 0.25
+    end
+end
+
 function off:draw()
     local t = [[utah teapot
 source http://www.holmes3d.net/
@@ -113,17 +146,12 @@ graphics/teapot/teapot.off
     ]]
     print(t, 0, 0, 9 )
     
-    print(#self.vertices1, 0, 120, 8)
+    print(#self.data.data1, 0, 120, 8)
 
-    for r = 1, self.vertice_count, 3 do
-    
-        --local xy = maths:project3d_vert(self.vertices[r], self.vertices[r + 2], 100, 100, 64, 24)
-        --pset(xy.x,xy.y, 8)
-        local radian = maths:radian(time() * 15)
-        local rot = maths:rotate_xaxis(radian, self.vertices1[r], self.vertices1[r+1], self.vertices1[r+2])
-        local xy = maths:project3d_vert(rot.x, rot.z, 50, 50, 64, 64)
-    
-        pset(xy.x, xy.y, 7)
-    end
+    off:draw_part(self.data.data1)
+    off:draw_part(self.data.data2)
+    off:draw_part(self.data.data3)
+    off:draw_part(self.data.data4)
+    off:draw_part(self.data.data5)
     
 end
